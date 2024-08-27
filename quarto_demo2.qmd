@@ -1,0 +1,96 @@
+---
+title: "quarto_demo2"
+format: live-html
+resources: 
+  - data
+jupyter: python3
+webr:
+  packages:
+    - ggplot2
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+### Pyodide
+```{pyodide}
+#| autorun: false
+#| 
+py_ls = []
+for x in range(5):
+  py_ls.append(x ** 2)
+print(py_ls)
+```
+
+### Web R
+```{webr}
+#| autorun: false
+#| 
+y <- rnorm(5,3,1)
+print(y)
+
+```
+
+
+### Install R packages interactively
+```{webr}
+#| autorun: false
+#| warning: false
+install.packages("dplyr", quiet = TRUE)
+library(dplyr)
+
+starwars |>
+  filter(height < 100) |>
+  select(name, height, mass)
+```
+
+### Passing data between engines
+
+```{webr}
+#| autorun: false
+#| edit: true
+#| define:
+#|   - mpg
+# Process and export data from R
+mpg <- mtcars |>
+  dplyr::select(mpg, hp) |>
+  dplyr::filter(mpg < 25)
+
+head(mpg)
+```
+
+```{pyodide}
+#| autorun: false
+#| edit: true
+#| input:
+#|   - mpg
+# Import and plot data in Python
+
+import matplotlib.pyplot as plt
+import pandas as pd
+
+df = pd.DataFrame(mpg)
+plt.plot(df['mpg'], df['hp'], 'o')
+plt.show()
+```
+
+
+### Loading Resources (data)
+
+```{webr}
+#| autorun: false
+list.files("data")
+mt <- read.csv("data/mtcars.csv")
+head(mt)
+```
+
+
+```{pyodide}
+#| autorun: false
+from os import listdir
+import pandas as pd
+print(listdir("data"))
+mt_py <- pd.read_csv('data/mtcars.csv')
+print(mt_py.iloc[1:3,])
+```
